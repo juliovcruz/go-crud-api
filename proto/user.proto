@@ -28,7 +28,7 @@ message UpdateUserResponse {
 }
 
 message DeleteUserRequest {
-  String id = 1;
+  string id = 1;
 }
 
 message DeleteUserResponse {
@@ -46,7 +46,7 @@ message ReadUserResponse {
 message ListUserRequest {}
 
 message ListUserReponse {
-  User user = 1;
+  User user = 1;  
 }
 
 service UserService {
