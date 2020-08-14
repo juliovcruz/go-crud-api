@@ -6,9 +6,8 @@ import (
 	"learn-go-crud/userpb"
 	"log"
 	"net"
-	"os"
-	"os/signal"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -20,6 +19,34 @@ var userdb *mongo.Collection
 var mongoContext context.Context
 
 type UserServiceServer struct{}
+
+type User struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Name     string             `bson:"email"`
+	Email    string             `bson:"email"`
+	Password string             `bson:"password"`
+}
+
+func (s *UserServiceServer) CreateUser(ctx context.Context, req *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error) {
+	userRequest := req.GetUser()
+
+	dataUser := User{
+		Name:     userRequest.GetName(),
+		Email:    userRequest.GetEmail(),
+		Password: userRequest.GetPassword(),
+	}
+
+	result, err := userdb.InsertOne(mongoContext, dataUser)
+	if err != nil {
+		return nil, err
+	}
+
+	idResult := result.InsertedID.(primitive.ObjectID)
+	userRequest.Id = idResult.Hex()
+
+	return &userpb.CreateUserResponse{User: userRequest}, nil
+
+}
 
 func main() {
 	fmt.Println("Server is running in localhost:5050")
@@ -48,19 +75,13 @@ func main() {
 		fmt.Println("MongoDB is connected")
 	}
 
-	userdb = db.Database("mydb").Collection("user")
+	userdb = db.Database("learn-go-crud").Collection("user")
 
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 
 	fmt.Println("Server succesfully started on port: 5050")
-
-	c := make(chan os.Signal)
-
-	signal.Notify(c, os.Interrupt)
-
-	<-c
 
 	fmt.Println("\nStopping the server...")
 	grpcServer.Stop()
