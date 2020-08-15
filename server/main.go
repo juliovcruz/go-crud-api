@@ -125,8 +125,36 @@ func (s *UserServiceServer) UpdateUser(ctx context.Context, req *userpb.UpdateUs
 
 }
 
-func (s *UserServiceServer) ListUser(ctx context.Context, req *userpb.ListUserRequest) (*userpb.ListUserResponse, error) {
-	return nil, nil
+func (s *UserServiceServer) ListUser(req *userpb.ListUserRequest, stream userpb.UserService_ListUserServer) error {
+	data := &User{}
+
+	cursor, err := userDb.Find(context.Background(), bson.M{})
+	if err != nil {
+		return err
+	}
+
+	defer cursor.Close(context.Background())
+	for cursor.Next(context.Background()) {
+		err := cursor.Decode(data)
+		if err != nil {
+			return err
+		}
+
+		stream.Send(&userpb.ListUserResponse{
+			User: &userpb.User{
+				Id:       data.ID.Hex(),
+				Name:     data.Name,
+				Email:    data.Email,
+				Password: data.Password,
+			},
+		})
+		if err := cursor.Err(); err != nil {
+			return err
+		}
+
+	}
+	return nil
+
 }
 
 func main() {
