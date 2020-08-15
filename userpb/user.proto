@@ -45,7 +45,7 @@ message ReadUserResponse {
 
 message ListUserRequest {}
 
-message ListUserReponse {
+message ListUserResponse {
   User user = 1;  
 }
 
@@ -53,6 +53,6 @@ service UserService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   rpc ReadUser(ReadUserRequest) returns (ReadUserResponse);
-  rpc ListUser(ListUserReponse) returns (ListUserReponse);
+  rpc ListUser(ListUserRequest) returns (ListUserResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 } 
