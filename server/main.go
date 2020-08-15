@@ -91,6 +91,40 @@ func (s *UserServiceServer) DeleteUser(ctx context.Context, req *userpb.DeleteUs
 
 }
 
+func (s *UserServiceServer) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest) (*userpb.UpdateUserResponse, error) {
+	user := req.GetUser()
+
+	id, err := primitive.ObjectIDFromHex(user.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	data := bson.M{
+		"name":     user.GetName(),
+		"email":    user.GetEmail(),
+		"password": user.GetPassword(),
+	}
+
+	result := userDb.FindOneAndUpdate(ctx, bson.M{"_id": id},
+		bson.M{"$set": data}, options.FindOneAndUpdate().SetReturnDocument(1))
+
+	decoded := User{}
+	err = result.Decode(&decoded)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userpb.UpdateUserResponse{
+		User: &userpb.User{
+			Id:       decoded.ID.Hex(),
+			Name:     decoded.Name,
+			Email:    decoded.Email,
+			Password: decoded.Password,
+		},
+	}, nil
+
+}
+
 func main() {
 	fmt.Println("Server is running in localhost:5050")
 
