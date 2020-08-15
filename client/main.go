@@ -19,7 +19,8 @@ func main() {
 
 	//createUser("Julio", "juliovcruz0@gmail.com", "12345", client)
 	//deleteUser("5f37e4e4dbb6cea24257788e", client)
-	readUser("5f37e6f5dbb6cea24257788f", client)
+	//readUser("5f37e6f5dbb6cea24257788f", client)
+	updateUser("5f37e6f5dbb6cea24257788f", "Julios", "juliocruz.dev@gmail.com", "12345", client)
 
 }
 
@@ -61,6 +62,24 @@ func readUser(id string, client userpb.UserServiceClient) {
 	}
 
 	res, err := client.ReadUser(context.Background(), request)
+	if err != nil {
+		log.Fatalf("Error in execution: %v", err)
+	}
+
+	log.Println(res)
+}
+
+func updateUser(id string, name string, email string, password string, client userpb.UserServiceClient) {
+	request := &userpb.UpdateUserRequest{
+		User: &userpb.User{
+			Id:       id,
+			Name:     name,
+			Email:    email,
+			Password: password,
+		},
+	}
+
+	res, err := client.UpdateUser(context.Background(), request)
 	if err != nil {
 		log.Fatalf("Error in execution: %v", err)
 	}
