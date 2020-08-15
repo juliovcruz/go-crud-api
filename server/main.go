@@ -74,6 +74,23 @@ func (s *UserServiceServer) ReadUser(ctx context.Context, req *userpb.ReadUserRe
 
 }
 
+func (s *UserServiceServer) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequest) (*userpb.DeleteUserResponse, error) {
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = userDb.DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		return nil, err
+	}
+
+	return &userpb.DeleteUserResponse{
+		Success: true,
+	}, nil
+
+}
+
 func main() {
 	fmt.Println("Server is running in localhost:5050")
 
