@@ -53,6 +53,6 @@ service UserService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   rpc ReadUser(ReadUserRequest) returns (ReadUserResponse);
-  rpc ListUser(ListUserRequest) returns (ListUserResponse);
+  rpc ListUser(ListUserRequest) returns (stream ListUserResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 } 
