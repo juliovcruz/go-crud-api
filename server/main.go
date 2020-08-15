@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,7 +16,7 @@ import (
 )
 
 var db *mongo.Client
-var userdb *mongo.Collection
+var userDb *mongo.Collection
 var mongoContext context.Context
 
 type UserServiceServer struct{}
@@ -36,7 +37,7 @@ func (s *UserServiceServer) CreateUser(ctx context.Context, req *userpb.CreateUs
 		Password: userRequest.GetPassword(),
 	}
 
-	result, err := userdb.InsertOne(mongoContext, dataUser)
+	result, err := userDb.InsertOne(mongoContext, dataUser)
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +46,31 @@ func (s *UserServiceServer) CreateUser(ctx context.Context, req *userpb.CreateUs
 	userRequest.Id = idResult.Hex()
 
 	return &userpb.CreateUserResponse{User: userRequest}, nil
+
+}
+
+func (s *UserServiceServer) ReadUser(ctx context.Context, req *userpb.ReadUserRequest) (*userpb.ReadUserResponse, error) {
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	result := userDb.FindOne(ctx, bson.M{"_id": id})
+	data := User{}
+	if err := result.Decode(&data); err != nil {
+		return nil, err
+	}
+
+	response := &userpb.ReadUserResponse{
+		User: &userpb.User{
+			Id:       id.Hex(),
+			Name:     data.Name,
+			Email:    data.Email,
+			Password: data.Password,
+		},
+	}
+
+	return response, nil
 
 }
 
@@ -75,7 +101,7 @@ func main() {
 		fmt.Println("MongoDB is connected")
 	}
 
-	userdb = db.Database("learn-go-crud").Collection("user")
+	userDb = db.Database("learn-go-crud").Collection("user")
 
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
