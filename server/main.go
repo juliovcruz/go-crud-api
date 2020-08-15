@@ -23,7 +23,7 @@ type UserServiceServer struct{}
 
 type User struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Name     string             `bson:"email"`
+	Name     string             `bson:"name"`
 	Email    string             `bson:"email"`
 	Password string             `bson:"password"`
 }
@@ -125,10 +125,14 @@ func (s *UserServiceServer) UpdateUser(ctx context.Context, req *userpb.UpdateUs
 
 }
 
-func main() {
-	fmt.Println("Server is running in localhost:5050")
+func (s *UserServiceServer) ListUser(ctx context.Context, req *userpb.ListUserRequest) (*userpb.ListUserResponse, error) {
+	return nil, nil
+}
 
-	listener, err := net.Listen("tcp", ":5050")
+func main() {
+	fmt.Println("Server is running in localhost:50050")
+
+	listener, err := net.Listen("tcp", ":50050")
 
 	if err != nil {
 		fmt.Println("Server fails: %v", err)
@@ -151,14 +155,13 @@ func main() {
 	} else {
 		fmt.Println("MongoDB is connected")
 	}
-
 	userDb = db.Database("learn-go-crud").Collection("user")
+
+	fmt.Println("Server succesfully started on port: 50050")
 
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
-
-	fmt.Println("Server succesfully started on port: 5050")
 
 	fmt.Println("\nStopping the server...")
 	grpcServer.Stop()
