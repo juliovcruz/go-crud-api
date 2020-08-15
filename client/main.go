@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"learn-go-crud/userpb"
 	"log"
 
@@ -17,10 +18,11 @@ func main() {
 
 	client := userpb.NewUserServiceClient(connection)
 
-	//createUser("Julio", "juliovcruz0@gmail.com", "12345", client)
+	//createUser("Victor", "victor@gmail.com", "12345", client)
 	//deleteUser("5f37e4e4dbb6cea24257788e", client)
 	//readUser("5f37e6f5dbb6cea24257788f", client)
-	updateUser("5f37e6f5dbb6cea24257788f", "Julios", "juliocruz.dev@gmail.com", "12345", client)
+	//updateUser("5f37e6f5dbb6cea24257788f", "Julios", "juliocruz.dev@gmail.com", "12345", client)
+	listUser(client)
 
 }
 
@@ -85,4 +87,25 @@ func updateUser(id string, name string, email string, password string, client us
 	}
 
 	log.Println(res)
+}
+
+func listUser(client userpb.UserServiceClient) {
+	request := &userpb.ListUserRequest{}
+
+	stream, err := client.ListUser(context.Background(), request)
+	if err != nil {
+		log.Fatalf("Eror in execution: %v", err)
+	}
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Eror in list: %v", err)
+		}
+		log.Println(res)
+	}
+
 }
