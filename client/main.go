@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"go-crud-api/userpb"
 	"io"
-	"learn-go-crud/userpb"
 	"log"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -17,12 +19,36 @@ func main() {
 	defer connection.Close()
 
 	client := userpb.NewUserServiceClient(connection)
+	var id, name, email, password string
 
-	//createUser("Victor", "victor@gmail.com", "12345", client)
-	//deleteUser("5f37e4e4dbb6cea24257788e", client)
-	//readUser("5f37e6f5dbb6cea24257788f", client)
-	//updateUser("5f37e6f5dbb6cea24257788f", "Julios", "juliocruz.dev@gmail.com", "12345", client)
-	listUser(client)
+	for true {
+		number := 7
+		fmt.Println("0 - Exit\n1 - CreateUser\n2 - ReadUser\n3 - UpdateUser \n4 - DeleteUser\n5 - ListUser")
+		fmt.Scanf("%d\n", &number)
+		if number == 0 {
+			break
+		}
+		if number == 1 {
+			fmt.Println("Write name, email and password \n(name email password)")
+			fmt.Scanf("%s %s %s\n", &name, &email, &password)
+			createUser(name, email, password, client)
+		} else if number == 2 {
+			fmt.Println("Write id\n(id)")
+			fmt.Scanf("%s\n", &id)
+			readUser(id, client)
+		} else if number == 3 {
+			fmt.Println("Write id, name, email e password\n(id name email password)")
+			fmt.Scanf("%s, %s, %s, %s, %s\n", &id, &name, &email, &password)
+			updateUser(id, name, email, password, client)
+		} else if number == 4 {
+			fmt.Println("Write id\n(id)")
+			fmt.Scanf("%s\n", &id)
+			deleteUser(id, client)
+		} else if number == 5 {
+			listUser(client)
+		}
+		time.Sleep(2 * time.Second)
+	}
 
 }
 

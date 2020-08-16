@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"learn-go-crud/userpb"
+	"go-crud-api/userpb"
 	"log"
 	"net"
 
