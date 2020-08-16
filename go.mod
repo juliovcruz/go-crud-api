@@ -1,4 +1,4 @@
-module learn-go-crud
+module go-crud-api
 
 go 1.14
 
