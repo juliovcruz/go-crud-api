@@ -47,6 +47,10 @@ func main() {
 		} else if number == 5 {
 			listUser(client)
 		}
+		id = ""
+		name = ""
+		email = ""
+		password = ""
 		time.Sleep(2 * time.Second)
 	}
 
