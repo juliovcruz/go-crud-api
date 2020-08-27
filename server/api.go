@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -14,7 +14,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-func main() {
+func Run() {
+
 	fmt.Println("Server is running in localhost:50050")
 
 	listener, err := net.Listen("tcp", ":50050")
@@ -29,7 +30,8 @@ func main() {
 	fmt.Println("Connecting to MongoDB...")
 	data.MongoContext = context.Background()
 
-	data.Db, err = mongo.Connect(data.MongoContext, options.Client().ApplyURI("mongodb://localhost:27017"))
+	data.Db, err = mongo.Connect(data.MongoContext,
+		options.Client().ApplyURI("mongodb://dbuser:dbpass@db:27017"))
 	if err != nil {
 		log.Fatal(err)
 	}
