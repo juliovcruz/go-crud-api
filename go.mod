@@ -4,9 +4,9 @@ go 1.14
 
 require (
 	github.com/golang/protobuf v1.4.2
-	github.com/vektra/mockery/v2 v2.2.1 // indirect
+	github.com/joho/godotenv v1.3.0
 	go.mongodb.org/mongo-driver v1.4.0
 	google.golang.org/grpc v1.31.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200814200710-a3740e5ed326 // indirect
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/protobuf v1.23.0
 )
