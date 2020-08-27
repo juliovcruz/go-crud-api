@@ -1,0 +1,28 @@
+version : "3.7"
+
+services:
+  db:
+    image: "mongo:4.2-bionic"
+    container_name: db
+    restart: always
+    ports:
+      - ${DB_PORT}:27017
+    environment: 
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS} 
+    volumes:
+      - ./mongo-volume:/data/db
+    
+  api:
+    image: golang:1.14
+    container_name: api
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    command: go run main.go
