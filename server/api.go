@@ -7,7 +7,9 @@ import (
 	"go-crud-api/userpb"
 	"log"
 	"net"
+	"os"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -16,9 +18,20 @@ import (
 
 func Run() {
 
-	fmt.Println("Server is running in localhost:50050")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error in read env %v", err)
+	}
 
-	listener, err := net.Listen("tcp", ":50050")
+	DB_HOST := os.Getenv("DB_HOST")
+	DB_PORT := os.Getenv("DB_PORT")
+	DB_USER := os.Getenv("DB_USER")
+	DB_PASS := os.Getenv("DB_PASS")
+	SERVER_PORT := os.Getenv("SERVER_PORT")
+
+	fmt.Println("Server is running in localhost:" + SERVER_PORT)
+
+	listener, err := net.Listen("tcp", ":"+SERVER_PORT)
 
 	if err != nil {
 		fmt.Println("Server fails: %v", err)
@@ -31,7 +44,7 @@ func Run() {
 	data.MongoContext = context.Background()
 
 	data.Db, err = mongo.Connect(data.MongoContext,
-		options.Client().ApplyURI("mongodb://dbuser:dbpass@db:27017"))
+		options.Client().ApplyURI("mongodb://"+DB_USER+":"+DB_PASS+"@"+DB_HOST+":"+DB_PORT))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +57,7 @@ func Run() {
 	}
 	data.UserDb = data.Db.Database("learn-go-crud").Collection("user")
 
-	fmt.Println("Server succesfully started on port: 50050")
+	fmt.Println("Server successfully started on port:" + SERVER_PORT)
 
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)

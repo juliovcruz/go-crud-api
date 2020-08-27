@@ -6,13 +6,20 @@ import (
 	"go-crud-api/userpb"
 	"io"
 	"log"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	connection, err := grpc.Dial("localhost:50050", grpc.WithInsecure())
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error in read env %v", err)
+	}
+	SERVER_PORT := os.Getenv("SERVER_PORT")
+	connection, err := grpc.Dial("localhost:"+SERVER_PORT, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Could not connect: %v", err)
 	}
